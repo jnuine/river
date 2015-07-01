@@ -1,29 +1,16 @@
 'use strict';
 
-import React from 'react';
-import tweenState from 'react-tween-state';
+import React, { Component } from 'react';
 
 import View from './View';
 import StaticRenderer from './StaticRenderer';
 
-// Using createClass for mixins
-var Translate = React.createClass({
+class Translate extends Component {
 
-  mixins: [tweenState.Mixin],
-
-  animating: 0,
-
-  getDefaultProps () {
-    return {
-      easing: 'easeInOutQuad',
-      unitX: '%',
-      unitY: '%',
-      unitZ: 'px',
-      X: 0,
-      Y: 0,
-      Z: 0
-    };
-  },
+  constructor () {
+    super();
+    this.animating = false;
+  }
 
   componentWillReceiveProps (nextProps) {
     var props = this.props;
@@ -41,12 +28,12 @@ var Translate = React.createClass({
         }
       }
     );
-  },
+  }
 
   shouldComponentUpdate (nextProps) {
     var props = this.props;
     return !this.animating || nextProps.children !== props.children;
-  },
+  }
 
   render () {
 
@@ -62,11 +49,21 @@ var Translate = React.createClass({
       <View style={style}>
         <StaticRenderer
           shouldUpdate={!this.animating}
-          render={() => <View>{this.props.children}</View>}
+          render={() => <View style={this.props.style}>{this.props.children}</View>}
         />
       </View>
     );
   }
-});
+
+}
+
+Translate.defaultProps = {
+  unitX: '%',
+  unitY: '%',
+  unitZ: 'px',
+  X: 0,
+  Y: 0,
+  Z: 0
+};
 
 module.exports = Translate;

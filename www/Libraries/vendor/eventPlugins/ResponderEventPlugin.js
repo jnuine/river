@@ -74,7 +74,7 @@ var scrollDependencies = [topLevelTypes.topScroll];
 
 var selectionDependencies = [topLevelTypes.topSelectionChange];
 
-var releaseDependencies = [topLevelTypes.topTouchEnd];
+var endDependencies = [topLevelTypes.topTouchEnd, topLevelTypes.topTouchCancel];
 
 var eventTypes = {
   /**
@@ -86,7 +86,7 @@ var eventTypes = {
       bubbled: keyOf({onStartShouldSetResponder: null}),
       captured: keyOf({onStartShouldSetResponderCapture: null}),
     },
-    dependencies: [],
+    dependencies: startDependencies,
   },
 
   /**
@@ -103,7 +103,7 @@ var eventTypes = {
       bubbled: keyOf({onScrollShouldSetResponder: null}),
       captured: keyOf({onScrollShouldSetResponderCapture: null}),
     },
-    dependencies: [],
+    dependencies: scrollDependencies,
   },
 
   /**
@@ -118,7 +118,7 @@ var eventTypes = {
       bubbled: keyOf({onSelectionChangeShouldSetResponder: null}),
       captured: keyOf({onSelectionChangeShouldSetResponderCapture: null}),
     },
-    dependencies: [],
+    dependencies: selectionDependencies,
   },
 
   /**
@@ -130,7 +130,7 @@ var eventTypes = {
       bubbled: keyOf({onMoveShouldSetResponder: null}),
       captured: keyOf({onMoveShouldSetResponderCapture: null}),
     },
-    dependencies: [],
+    dependencies: moveDependencies,
   },
 
   /**
@@ -138,15 +138,15 @@ var eventTypes = {
    */
   responderStart: {
     registrationName: keyOf({onResponderStart: null}),
-    dependencies: [],
+    dependencies: startDependencies,
   },
   responderMove: {
     registrationName: keyOf({onResponderMove: null}),
-    dependencies: [],
+    dependencies: moveDependencies,
   },
   responderEnd: {
     registrationName: keyOf({onResponderEnd: null}),
-    dependencies: [],
+    dependencies: endDependencies,
   },
   responderRelease: {
     registrationName: keyOf({onResponderRelease: null}),

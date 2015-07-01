@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
   plugins = plugins.concat([
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
-      exclude: /third\-party/
+      exclude: /^Libraries/
     }),
     new webpack.optimize.OccurenceOrderPlugin()
   ]);

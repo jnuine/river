@@ -5,9 +5,7 @@ import React from 'react';
 import View from './View';
 import Translate from './Translate';
 
-import PanResponder from 'eventPlugins/PanResponder';
-
-import rebound from 'rebound';
+import Scroller from 'zynga/scroller';
 
 var SCROLLVIEW_STYLE = {
   overflow: 'hidden',
@@ -37,54 +35,16 @@ class ScrollView extends React.Component {
 
   componentWillMount () {
     this.configured = false;
-    this.springSystem = new rebound.SpringSystem();
-    this._scrollSpring = this.springSystem.createSpring(10, 7);
-
-    this._scrollSpring.setOvershootClampingEnabled(true);
-
-    this._scrollSpring.addListener({
-      onSpringUpdate: () => {
-        var val = this._scrollSpring.getCurrentValue();
-        val = Math.max(this.minVal, val);
-        val = Math.min(this.maxVal, val);
-        this.setState({
-          top: val
-        });
+    this.scroller = new Scroller(
+      this.handleScroll.bind(this),
+      {
+        scrollingY: true,
+        scrollingX: false
       }
-    });
-
-    this._panResponder = PanResponder.create({
-      // Claim responder if it's a horizontal pan
-      onMoveShouldSetPanResponder: (e, gestureState) => {
-        console.log('[scrollView] onMoveShouldSetPanResponder');
-        if (Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
-          console.log('scrollView wins');
-          this._scrollStartOffset = this.state.top;
-          return true;
-        }
-      },
-
-      // Dragging, move the view with the touch
-      onPanResponderMove: (e, gestureState) => {
-        e.nativeEvent.preventDefault();
-        this._scrollSpring.setEndValue(
-          this._scrollStartOffset - gestureState.dy
-        );
-      },
-
-      onPanResponderRelease: (e, gestureState) => {
-        e.nativeEvent.preventDefault();
-        var { dy, vy} = gestureState;
-        this._scrollSpring.setEndValue(
-          this._scrollStartOffset - (dy + vy * 200)
-        );
-      }
-    });
-
+    );
   }
 
   componentDidMount () {
-    this._scrollSpring.setEndValue(0);
     this.configure();
   }
 
@@ -145,8 +105,13 @@ class ScrollView extends React.Component {
       this.dimensions,
       dimensions
     );
-    this.minVal = 0;
-    this.maxVal = dimensions.contentHeight - dimensions.clientHeight;
+
+    this.scroller.setDimensions(
+      this.dimensions.clientWidth,
+      this.dimensions.clientHeight,
+      this.dimensions.contentWidth,
+      this.dimensions.contentHeight
+    );
   }
 
   shouldUpdateScrollPosition () {
@@ -155,6 +120,52 @@ class ScrollView extends React.Component {
       (dimensions.clientWidth >= dimensions.contentWidth) &&
       (dimensions.clientHeight >= dimensions.contentHeight)
     );
+  }
+
+  // handleTouchStart (e) {
+  //   e.preventDefault();
+  //   this.scroller.doTouchStart(e.touches, e.timeStamp);
+  // }
+
+  // handleTouchMove (e) {
+  //   e.preventDefault();
+  //   this.scroller.doTouchMove(e.touches, e.timeStamp, e.scale);
+  // }
+
+  // handleTouchEnd (e) {
+  //   e.preventDefault();
+  //   this.scroller.doTouchEnd(e.timeStamp);
+  // }
+
+  onStartShouldSetResponder () {
+    return true;
+  }
+
+  onMoveShouldSetResponder () {
+    return true;
+  }
+
+  onResponderTerminationRequest () {
+    return true;
+  }
+
+
+  onResponderGrant (e) {
+    e = e.nativeEvent;
+    e.preventDefault();
+    this.scroller.doTouchStart(e.touches, e.timeStamp);
+  }
+
+  onResponderMove (e) {
+    e = e.nativeEvent;
+    e.preventDefault();
+    this.scroller.doTouchMove(e.touches, e.timeStamp, e.scale);
+  }
+
+  onResponderEnd (e) {
+    e = e.nativeEvent;
+    e.preventDefault();
+    this.scroller.doTouchEnd(e.timeStamp);
   }
 
   handleScroll (left, top) {
@@ -179,8 +190,15 @@ class ScrollView extends React.Component {
 
     return (
       <View
+        onStartShouldSetResponder={this.onStartShouldSetResponder.bind(this)}
+        onMoveShouldSetResponder={this.onMoveShouldSetResponder.bind(this)}
+        onResponderTerminationRequest={this.onResponderTerminationRequest.bind(this)}
+        onResponderGrant={this.onResponderGrant.bind(this)}
+        onResponderMove={this.onResponderMove.bind(this)}
+        onResponderEnd={this.onResponderEnd.bind(this)}
+        onResponderTerminate={this.onResponderEnd.bind(this)}
+        ref={c => { this.scrollerComponent = c; }}
         style={style}
-        {...this._panResponder.panHandlers}
         >
         <Translate
           style={TRANSLATE_STYLE}

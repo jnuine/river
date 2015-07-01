@@ -1,0 +1,155 @@
+'use strict';
+
+
+import React, { Component } from 'react';
+
+import View from 'base/View';
+import Translate from 'base/Translate';
+import PanResponder from 'eventPlugins/PanResponder';
+
+import rebound from 'rebound';
+
+function deviceWidth () {
+  return window.document.documentElement.getBoundingClientRect().width;
+}
+
+class ScrollableTabView extends Component {
+  constructor () {
+    super();
+    this.state = { currentPage: 0, XPosition: 0 };
+  }
+
+  componentDidMount() {
+    this._scrollSpring.setCurrentValue(0);
+  }
+
+  componentWillMount() {
+    // Initialize the spring that will drive animations
+    this.springSystem = new rebound.SpringSystem();
+    this._scrollSpring = this.springSystem.createSpring();
+    this._updateSpringConfig(this.props);
+
+    this._scrollSpring.addListener({
+      onSpringUpdate: () => {
+        var currentValue = this._scrollSpring.getCurrentValue();
+        var offsetX = deviceWidth() * currentValue;
+
+        this.setState({
+          XPosition: -1 * offsetX
+        });
+      }
+    });
+
+    this._panResponder = PanResponder.create({
+      // Claim responder if it's a horizontal pan
+      onMoveShouldSetPanResponder: (e, gestureState) => {
+        console.log('[ScrollableTabView] onMoveShouldSetPanResponder');
+        if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+          console.log('ScrollableTabView wins');
+          return true;
+          // if (gestureState.moveX <= this.props.edgeHitWidth ||
+          //     gestureState.moveX >= deviceWidth() - this.props.edgeHitWidth) {
+
+          // }
+        }
+      },
+
+      // Touch is released, scroll to the one that you're closest to
+      onPanResponderRelease: (e, gestureState) => {
+        var relativeGestureDistance = gestureState.dx / deviceWidth(),
+            lastPageIndex = this.props.children.length - 1,
+            vx = gestureState.vx,
+            newPage = this.state.currentPage;
+
+        if (this.state.currentPage !== lastPageIndex && (relativeGestureDistance < -0.5 || (relativeGestureDistance < 0 && vx <= 0.5))) {
+          newPage = newPage + 1;
+        } else if (this.state.currentPage !== 0 && (relativeGestureDistance > 0.5 || (relativeGestureDistance > 0 && vx >= 0.5))) {
+          newPage = newPage - 1;
+        }
+
+        this.goToPage(newPage);
+      },
+
+      // Dragging, move the view with the touch
+      onPanResponderMove: (e, gestureState) => {
+        var dx = gestureState.dx;
+        var lastPageIndex = this.props.children.length - 1;
+
+        if (this.state.currentPage === 0 && dx > 0) {
+          // Don't set the spring if we're on the first page and trying to move before it
+        } else if (this.state.currentPage === lastPageIndex && dx < 0) {
+          // Don't set the spring if we're already on the last page and trying to move to the next
+        } else {
+          // This is awkward because when we are scrolling we are offsetting the underlying view
+          // to the left (-x)
+          var offsetX = dx - (this.state.currentPage * deviceWidth());
+          this._scrollSpring.setCurrentValue(-1 * offsetX / deviceWidth());
+        }
+      },
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this._updateSpringConfig(nextProps);
+  }
+
+  _updateSpringConfig(props) {
+    var springConfig = this._scrollSpring.getSpringConfig();
+    springConfig.tension = rebound.OrigamiValueConverter.tensionFromOrigamiValue(props.springTension || 25);
+    springConfig.friction = rebound.OrigamiValueConverter.frictionFromOrigamiValue(props.springFriction || 8);
+
+    this._scrollSpring.setOvershootClampingEnabled((typeof props.clampSpring === 'undefined') ? true : props.clampSpring);
+  }
+
+  goToPage(pageNumber) {
+    this.props.currentPage !== pageNumber && this.props.onChangeTab &&
+      this.props.onChangeTab({i: pageNumber, ref: this.props.children[pageNumber]});
+
+    this._scrollSpring.setEndValue(pageNumber);
+    this.setState({currentPage: pageNumber});
+  }
+
+  render() {
+
+    var deviceWidthCache = deviceWidth();
+
+    var sceneContainerStyle = {
+      width: deviceWidthCache * this.props.children.length,
+      height: '100%'
+    };
+
+    function wrapChild (child, index) {
+      var left = index * deviceWidthCache;
+      var right = (index + 1) * deviceWidthCache;
+      return (
+        <View style={{
+          position: 'absolute',
+          top: 0, right: right, bottom: 0, left: left,
+          width: deviceWidthCache
+        }}>
+          {child}
+        </View>
+      );
+    }
+
+    return (
+      <View
+        style={{ height: '100%', width: '100%', overflow: 'hidden' }}
+        {...this._panResponder.panHandlers}>
+        <Translate
+          style={sceneContainerStyle}
+          unitX="px"
+          X={this.state.XPosition}
+          >
+          {React.Children.map(this.props.children, wrapChild)}
+        </Translate>
+      </View>
+    );
+  }
+}
+
+ScrollableTabView.defaultProps = {
+  edgeHitWidth: 30,
+};
+
+module.exports = ScrollableTabView;

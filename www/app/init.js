@@ -1,8 +1,16 @@
+import React from 'react';
+
 import injectEventPlugins from './injectEventPlugins';
+
+import getAppDOMNode from'./getAppDOMNode';
+import River from './components/River';
 
 function init () {
   injectEventPlugins();
-  global.alert('lol, nothing here ');
+  React.render(
+    <River />,
+    getAppDOMNode()
+  );
 }
 
 export default init;

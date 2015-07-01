@@ -44,9 +44,13 @@ class Touchable extends React.Component {
       <View
         {...props}
         style={style}
-        onTouchStart={this.onTouchStart.bind(this)}
-        onTouchEnd={this.onTouchEnd.bind(this)}
-        onTouchCancel={this.onTouchEnd.bind(this)}>
+        should
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => false}
+        onResponderGrant={this.onResponderGrant.bind(this)}
+        onResponderEnd={this.onResponderEnd.bind(this)}
+        onResponderTerminationRequest={() => true}
+        onResponderTerminate={this.onResponderEnd.bind(this)}>
         {this.props.children}
       </View>
     );

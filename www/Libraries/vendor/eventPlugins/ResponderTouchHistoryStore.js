@@ -107,7 +107,6 @@ var recordStartTouchData = function(touch) {
 };
 
 var recordMoveTouchData = function(touch) {
-  console.log('recordMoveTouchData', touch.identifier);
   var touchBank = touchHistory.touchBank;
   var touchTrack = touchBank[touch.identifier];
   if (__DEV__) {

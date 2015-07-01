@@ -1,9 +1,5 @@
 'use strict';
 
-import logger from 'jnuine-utils/lib/logger';
-
-var log = logger(__filename);
-
 import React from 'react';
 
 class StaticRenderer extends React.Component {
@@ -20,7 +16,7 @@ class StaticRenderer extends React.Component {
 
 StaticRenderer.propTypes = {
   shouldUpdate: React.PropTypes.bool.isRequired,
-  render: React.PropTypes.func.isRequired,
+  render: React.PropTypes.func.isRequired
 };
 
 export default StaticRenderer;

@@ -56,9 +56,7 @@ class ScrollView extends React.Component {
     this._panResponder = PanResponder.create({
       // Claim responder if it's a horizontal pan
       onMoveShouldSetPanResponder: (e, gestureState) => {
-        console.log('[scrollView] onMoveShouldSetPanResponder');
         if (Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
-          console.log('scrollView wins');
           this._scrollStartOffset = this.state.top;
           return true;
         }
@@ -149,14 +147,6 @@ class ScrollView extends React.Component {
     this.maxVal = dimensions.contentHeight - dimensions.clientHeight;
   }
 
-  shouldUpdateScrollPosition () {
-    var dimensions = this.dimensions;
-    return !(
-      (dimensions.clientWidth >= dimensions.contentWidth) &&
-      (dimensions.clientHeight >= dimensions.contentHeight)
-    );
-  }
-
   handleScroll (left, top) {
     if (
       top >= 0 &&
@@ -164,9 +154,6 @@ class ScrollView extends React.Component {
     ) {
       this.props.onScroll && this.props.onScroll(left, top);
     }
-    // if (!this.shouldUpdateScrollPosition()) {
-    //   return;
-    // }
     this.setState({ top: top });
   }
 
@@ -184,7 +171,6 @@ class ScrollView extends React.Component {
         >
         <Translate
           style={TRANSLATE_STYLE}
-          easing="linear"
           unitY="px"
           Y={-1 * this.state.top}>
           <View ref={(c) => this.contentComponent = c}>

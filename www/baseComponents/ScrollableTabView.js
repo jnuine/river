@@ -43,14 +43,8 @@ class ScrollableTabView extends Component {
     this._panResponder = PanResponder.create({
       // Claim responder if it's a horizontal pan
       onMoveShouldSetPanResponder: (e, gestureState) => {
-        console.log('[ScrollableTabView] onMoveShouldSetPanResponder');
         if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
-          console.log('ScrollableTabView wins');
           return true;
-          // if (gestureState.moveX <= this.props.edgeHitWidth ||
-          //     gestureState.moveX >= deviceWidth() - this.props.edgeHitWidth) {
-
-          // }
         }
       },
 
@@ -147,9 +141,5 @@ class ScrollableTabView extends Component {
     );
   }
 }
-
-ScrollableTabView.defaultProps = {
-  edgeHitWidth: 30,
-};
 
 module.exports = ScrollableTabView;

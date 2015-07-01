@@ -1,0 +1,31 @@
+{
+  "name": "river",
+  "version": "0.0.0",
+  "description": "The amazing next multi-billion user app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jnuine/river.git"
+  },
+  "author": "Dasha Inc.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jnuine/river/issues"
+  },
+  "homepage": "https://github.com/jnuine/river#readme",
+  "devDependencies": {
+    "babel-core": "5.6.15",
+    "babel-loader": "5.2.2",
+    "babel-runtime": "5.6.15",
+    "node-libs-browser": "0.5.2",
+    "webpack": "1.10.0"
+  },
+  "dependencies": {
+    "react": "file:Libraries/vendor/react",
+    "react-tween-state": "0.1.1",
+    "velocity-animate": "1.2.2"
+  }
+}

@@ -1,0 +1,5 @@
+export const INCREMENT_COUNTER = 'INCREMENT_COUNTER';
+export const DECREMENT_COUNTER = 'DECREMENT_COUNTER';
+
+export const NEW_NOTE = 'NEW_NOTE';
+export const INIT_NOTES = 'INIT_NOTES';

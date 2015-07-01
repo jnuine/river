@@ -1,5 +1,6 @@
 {
   "parser": "babel-eslint",
+  "stage": 0,
   "env": {
     "browser": true,
     "node": true

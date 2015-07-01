@@ -27,6 +27,7 @@
     "react": "file:Libraries/vendor/react",
     "react-tween-state": "0.1.1",
     "rebound": "0.0.13",
+    "redux": "1.0.0-alpha",
     "velocity-animate": "1.2.2"
   }
 }

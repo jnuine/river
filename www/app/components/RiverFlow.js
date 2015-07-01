@@ -1,17 +1,21 @@
-// THE river
-
 import React from 'react';
+import { connect } from 'redux/react';
+import Notes from './Notes';
 
-import View from 'base/View';
-
+@connect(state => ({
+  notes: state.notes
+}))
 class RiverFlow {
-
-  render () {
+  render() {
+    const { notes, dispatch, session } = this.props;
     return (
-      <View />
+      <Notes
+        notes={notes}
+        session={session}
+        dispatch={dispatch}
+      />
     );
   }
-
 }
 
 export default RiverFlow;
